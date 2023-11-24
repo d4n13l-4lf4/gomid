@@ -1,0 +1,7 @@
+{
+    "files.watcherExclude": {
+        "**/target": true
+    },
+    "go.lintTool": "golangci-lint",
+    "go.lintFlags": ["--fast"]
+}
