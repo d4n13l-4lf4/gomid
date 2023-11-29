@@ -1,18 +1,73 @@
 # Options for analysis running.
 run:
   # See the dedicated "run" documentation section.
-  option: value
+  concurrency: 4
+  timeout: 2m
+  tests: true
+  modules-download-mode: mod
 # output configuration options
 output:
   # See the dedicated "output" documentation section.
-  option: value
+  format: colored-line-number
+  print-issued-lines: true
+  print-linter-name: true
 # All available settings of specific linters.
 linters-settings:
   # See the dedicated "linters-settings" documentation section.
-  option: value
+  cyclop: 
+    max-complexity: 10
+    package-average: 1.5
+  dupl:
+    threshold: 100
+  funlen:
+    lines: 70
+    statements: 40
+    ignore-comments: true
+  gofmt:
+    simplify: true
+    rewrite-rules:
+      - pattern: 'interface{}'
+        replacement: any
 linters:
   # See the dedicated "linters" documentation section.
-  option: value
+  enable: 
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+    - asciicheck
+    - bodyclose
+    - containedctx
+    - contextcheck
+    - cyclop
+    - decorder
+    - dogsled
+    - dupl
+    - dupword
+    - errchkjson
+    - errname
+    - funlen
+    - gochecknoglobals
+    - gochecknoinits
+    - godot
+    - godox
+    - gofmt
+    - gci
+    - goimports
+    - gomnd
+    - lll
+    - misspell
+    - nestif
+    - nilerr
+    - nlreturn
+    - predeclared
+    - reassign
+    - revive
+    - unparam
+    - wastedassign
+    - whitespace
 issues:
   # See the dedicated "issues" documentation section.
   option: value

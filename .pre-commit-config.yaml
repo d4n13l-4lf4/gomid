@@ -1,0 +1,16 @@
+repos:
+  - repo: https://github.com/golangci/golangci-lint
+    rev: v1.55.2
+    hooks:
+      - id: golangci-lint-full
+  - repo: local
+    hooks:
+      - id: go-coverage-test
+        name: go coverage test
+        entry: ./scripts/go-coverage-test.sh
+        types:
+          - go
+        language: script
+        description: Run go coverage test
+        pass_filenames: false
+        args: [--settings-file=./scripts/go-coverage-test-settings.sh]  # Specify the path to the SETTINGS_FILE

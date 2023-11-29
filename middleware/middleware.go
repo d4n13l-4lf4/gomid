@@ -1,7 +1,7 @@
-package main
+package middleware
 
 import "log"
 
-func main() {
+func Middleware() {
 	log.Println("jajaja")
 }
