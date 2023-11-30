@@ -27,6 +27,8 @@ type (
 	}
 	testChainSuccess struct {
 		chain *middleware.Wrapper
+		out   any
+		err   error
 	}
 )
 
@@ -118,17 +120,25 @@ func addMiddlareWithError(ctx context.Context, errMsg string) (context.Context, 
 	return context.WithValue(ctx, &testChainKey{}, test), nil
 }
 
+func executeMiddleware(ctx context.Context) (context.Context, error) {
+	test := ctx.Value(&testChainKey{}).(*testChainSuccess)
+	chain := test.chain
+	chainedFn := chain.Build().(func(context.Context, int) (any, error))
+
+	//nolint:contextcheck
+	test.out, test.err = chainedFn(context.TODO(), 1)
+
+	return context.WithValue(ctx, &testChainKey{}, test), nil
+}
+
 func shouldGetMyNumber(ctx context.Context, num int) error {
 	var asserter internal.Asserter
 
 	assertions := assert.New(&asserter)
-	chain := ctx.Value(&testChainKey{}).(*testChainSuccess).chain
-	chainedFn := chain.Build().(func(context.Context, int) (any, error))
-	myCtx := context.WithoutCancel(ctx)
-	out, err := chainedFn(myCtx, 1)
+	test := ctx.Value(&testChainKey{}).(*testChainSuccess)
 
-	assertions.Equal(num, out)
-	assertions.NoError(err)
+	assertions.Equal(num, test.out)
+	assertions.NoError(test.err)
 
 	return asserter.Error()
 }
@@ -137,13 +147,10 @@ func shouldGetError(ctx context.Context, errMsg string) error {
 	var asserter internal.Asserter
 
 	assertions := assert.New(&asserter)
-	chain := ctx.Value(&testChainKey{}).(*testChainSuccess).chain
-	chainedFn := chain.Build().(func(context.Context, int) (any, error))
-	myCtx := context.WithoutCancel(ctx)
-	out, err := chainedFn(myCtx, 1)
+	test := ctx.Value(&testChainKey{}).(*testChainSuccess)
 
-	assertions.Zero(out)
-	assertions.EqualError(err, errMsg)
+	assertions.Zero(test.out)
+	assertions.EqualError(test.err, errMsg)
 
 	return asserter.Error()
 }
@@ -173,6 +180,8 @@ func InitializeChainScenario(sc *godog.ScenarioContext) {
 	sc.Given("^I want to add middlewares to my base function$", wantToAddMiddlewares)
 	sc.When("^I add middlewares to my base function$", addMiddlewares)
 	sc.Step("^I add a middleware with an error ([a-z\\s]+)$", addMiddlareWithError)
+	sc.Step("^I execute my functionality$", executeMiddleware)
+
 	sc.Then("^I should get a number (\\d+)$", shouldGetMyNumber)
 	sc.Then("^I should get an error ([a-z\\s]+)$", shouldGetError)
 

@@ -6,6 +6,7 @@ Feature: Building a middleware chain
     Scenario: A middleware chain returns my number successfully
         Given I want to add middlewares to my base function
         When I add middlewares to my base function
+        And I execute my functionality
         Then I should get a number <number>
 
         Examples:
@@ -15,6 +16,7 @@ Feature: Building a middleware chain
     Scenario: My base function returns an error successfully
         Given I have a base function which returns an error <error>
         When I add middlewares to my base function
+        And I execute my functionality
         Then I should get an error <error>
 
         Examples:
@@ -25,6 +27,7 @@ Feature: Building a middleware chain
         Given I want to add middlewares to my base function
         When I add middlewares to my base function
         And I add a middleware with an error <error>
+        And I execute my functionality
         Then I should get an error <error>
 
         Examples:
