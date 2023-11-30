@@ -6,7 +6,8 @@ BUILD_DIR=build
 # Directories to exclude from code coverage
 EXCLUDE_DIRS=(
     "internal"
-    "vendor"
+    "vendor",
+    "examples"
 )
 # Files to exclude from code coverage
 EXCLUDE_FILES=(

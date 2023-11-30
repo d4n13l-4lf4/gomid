@@ -17,6 +17,10 @@ jobs:
   test-coverage:
 
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go-version: ['1.18', '1.19', '1.20', '1.21.4']
+      fail-fast: true
 
     steps:
     - uses: actions/checkout@v4
@@ -24,7 +28,7 @@ jobs:
         fetch-depth: 2
     - uses: actions/setup-go@v4
       with:
-        go-version: '>=1.21.4'
+        go-version: ${{ matrix.go-version }}
     - name: Display Go version 
       run: go version
     - name: Intall pre-commit
@@ -34,6 +38,7 @@ jobs:
       run: |
         pre-commit run --all-files -v
     - name: Upload coverage reports to Codecov
+      if: ${{ matrix.go-version }} == '1.21.4'
       uses: codecov/codecov-action@v3
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

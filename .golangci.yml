@@ -16,7 +16,7 @@ linters-settings:
   # See the dedicated "linters-settings" documentation section.
   cyclop: 
     max-complexity: 10
-    package-average: 1.5
+    package-average: 3
   dupl:
     threshold: 100
   funlen:

@@ -2,6 +2,17 @@
     "files.watcherExclude": {
         "**/target": true
     },
+    "files.autoSave": "onFocusChange",
     "go.lintTool": "golangci-lint",
-    "go.lintFlags": ["--fast"]
+    "go.lintFlags": ["--fast"],
+    "go.formatTool": "default",
+    "go.inferGopath": true,
+    "go.lintOnSave": "workspace",
+    "[go]": {
+        "editor.defaultFormatter": "golang.go",
+        "editor.codeActionsOnSave": {
+            "source.fixAll": "always",
+            "source.organizeImports": true
+        },
+    }
 }

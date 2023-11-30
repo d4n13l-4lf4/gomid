@@ -42,6 +42,11 @@ case $key in
     EXCLUDE_DIRS=($(echo "${key#*=}" | tr ' ' ' '))
     shift # past argument
     ;;
+    --check-coverage)
+    CHECK_COVERAGE=($(echo "$2" | tr ' ' ' '))
+    shift # past argument
+    shift # past value
+    ;;
     --exclude-files)
     EXCLUDE_FILES=($(echo "$2" | tr ' ' ' '))
     shift # past argument
@@ -58,6 +63,7 @@ esac
 done
 THRESHOLD="${THRESHOLD:-85}"
 BUILD_DIR="${BUILD_DIR:-build}"
+CHECK_COVERAGE=${CHECK_COVERAGE:-true}
 # If a settings file is provided, source it
 if [[ -n $SETTINGS_FILE && -f $SETTINGS_FILE ]]; then
     source "$SETTINGS_FILE"
@@ -75,17 +81,23 @@ fi
 COVERAGE_FILE="${BUILD_DIR}/coverage.out"
 # Create build dir
 mkdir -p "${BUILD_DIR}"
-# Step 0: Run tests only
+# Step 1: Run tests only
 echo "=== Running tests only"
 go test $PKGS -v -race -count=2
-# Step 1: Run tests with coverage
+# Step 2: Run tests with coverage
 echo "=== Running tests with coverage"
 go test $PKGS -race -coverprofile="${COVERAGE_FILE}" -covermode=atomic
-# Step 2: Exclude certain files from coverage
+# Step 3: Show coverage results
+go tool cover -func="${COVERAGE_FILE}"
+# Step 4: Exclude certain files from coverage
 for p in "${EXCLUDE_FILES[@]}"; do
     sed -i.bak "/${p//\//\\/}/d" "${COVERAGE_FILE}"
 done
-# Step 3: Check coverage and compare with the threshold
+# Check if it should check coverage
+if [ $CHECK_COVERAGE = "false" ]; then
+    exit $(echo $?)
+fi
+# Step 5: Check coverage and compare with the threshold
 COVERAGE=$(go tool cover -func="${COVERAGE_FILE}" | grep total | awk '{print substr($3, 1, length($3)-1)}')
 echo "Total coverage: ${COVERAGE}%. Threshold: ${THRESHOLD}%."
 if (($(echo "${COVERAGE} < ${THRESHOLD}" | bc -l))); then
