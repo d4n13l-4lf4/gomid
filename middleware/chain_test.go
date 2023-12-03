@@ -22,11 +22,11 @@ const (
 type (
 	testChainKey   struct{}
 	testChainError struct {
-		chain  *middleware.Wrapper
+		chain  *middleware.Wrapper[func(context.Context, int) (any, error)]
 		baseFn any
 	}
 	testChainSuccess struct {
-		chain *middleware.Wrapper
+		chain *middleware.Wrapper[func(context.Context, int) (any, error)]
 		out   any
 		err   error
 	}
@@ -34,7 +34,7 @@ type (
 
 func useWrongBaseFunction(ctx context.Context, wrappedType string) (context.Context, error) {
 	wrappedFn := getWrappedFunction(wrappedType)
-	chain := middleware.Wrap(wrappedFn)
+	chain := middleware.Wrap[func(context.Context, int) (any, error)](wrappedFn)
 	test := &testChainError{
 		chain:  chain,
 		baseFn: wrappedFn,
@@ -58,7 +58,7 @@ func wantToAddMiddlewares(ctx context.Context) (context.Context, error) {
 	wrappedFn := func(_ context.Context, a int) (int, error) {
 		return a + 1, nil
 	}
-	chain := middleware.Wrap(wrappedFn)
+	chain := middleware.Wrap[func(context.Context, int) (any, error)](wrappedFn)
 	test := &testChainSuccess{
 		chain: chain,
 	}
@@ -70,7 +70,7 @@ func haveBasefunctionWithAnError(ctx context.Context, errMsg string) (context.Co
 	wrappedFn := func(_ context.Context, a int) (int, error) {
 		return 0, errors.New(errMsg)
 	}
-	chain := middleware.Wrap(wrappedFn)
+	chain := middleware.Wrap[func(context.Context, int) (any, error)](wrappedFn)
 	test := &testChainSuccess{
 		chain: chain,
 	}
@@ -123,7 +123,7 @@ func addMiddlareWithError(ctx context.Context, errMsg string) (context.Context, 
 func executeMiddleware(ctx context.Context) (context.Context, error) {
 	test := ctx.Value(&testChainKey{}).(*testChainSuccess)
 	chain := test.chain
-	chainedFn := chain.Build().(func(context.Context, int) (any, error))
+	chainedFn := chain.Build()
 
 	//nolint:contextcheck
 	test.out, test.err = chainedFn(context.TODO(), 1)

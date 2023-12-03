@@ -9,29 +9,34 @@ import (
 const allowedArgs = 2
 
 type (
-	Wrapper struct {
+	// Wrapper wraps a base function to be decorated with middlewares.
+	Wrapper[R any] struct {
 		wrapped     any
 		middlewares []Middleware
 	}
 
+	// Middleware is a function which receives the next function in the chain.
 	Middleware func(nxt Next) Next
 
+	// Next is a function which performs actual processing of input and output.
 	Next func(context.Context, any) (any, error)
 )
 
-func Wrap(fn any) *Wrapper {
-	return &Wrapper{
+// Wrap creates a ready to use wrapper for adding middlewares.
+func Wrap[R any](fn any) *Wrapper[R] {
+	return &Wrapper[R]{
 		wrapped: fn,
 	}
 }
 
-func (w *Wrapper) Add(midd Middleware) *Wrapper {
+// Add adds a new middleware to be used in the chain.
+func (w *Wrapper[R]) Add(midd Middleware) *Wrapper[R] {
 	w.middlewares = append(w.middlewares, midd)
 
 	return w
 }
 
-func (w *Wrapper) verifyWrapped(val reflect.Value) {
+func (w *Wrapper[R]) verifyWrapped(val reflect.Value) {
 	wrappedType := val.Type()
 
 	if wrappedType.Kind() != reflect.Func {
@@ -59,7 +64,8 @@ func (w *Wrapper) verifyWrapped(val reflect.Value) {
 	}
 }
 
-func (w *Wrapper) Build() any {
+// Build builds a middleware chain with defined middlewares.
+func (w *Wrapper[R]) Build() R {
 	wrappedVal := reflect.ValueOf(w.wrapped)
 
 	w.verifyWrapped(wrappedVal)
@@ -68,11 +74,12 @@ func (w *Wrapper) Build() any {
 		return func(ctx context.Context, data any) (any, error) {
 			in := []reflect.Value{reflect.ValueOf(ctx), reflect.ValueOf(data)}
 			out := wrapped.Call(in)
+			firstOut := out[0].Interface()
 			if err, ok := out[1].Interface().(error); ok {
-				return out[0].Interface(), err
+				return firstOut, err
 			}
 
-			return out[0].Interface(), nil
+			return firstOut, nil
 		}
 	}(wrappedVal)
 
@@ -82,13 +89,13 @@ func (w *Wrapper) Build() any {
 	}
 
 	wrappedType := wrappedVal.Type()
-	decoratedFn := reflect.ValueOf(head)
+	chainedFn := reflect.ValueOf(head)
 
-	inner := func(decorated reflect.Value) func(args []reflect.Value) (results []reflect.Value) {
+	inner := func(chained reflect.Value) func(args []reflect.Value) (results []reflect.Value) {
 		return func(args []reflect.Value) (results []reflect.Value) {
-			return decorated.Call(args)
+			return chained.Call(args)
 		}
-	}(decoratedFn)
+	}(chainedFn)
 
 	interfaceType := reflect.TypeOf((*any)(nil)).Elem()
 
@@ -98,5 +105,5 @@ func (w *Wrapper) Build() any {
 
 	outFn := reflect.MakeFunc(genericFn, inner)
 
-	return outFn.Interface()
+	return outFn.Interface().(R)
 }
