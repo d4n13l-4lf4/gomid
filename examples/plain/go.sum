@@ -4,8 +4,8 @@ github.com/cucumber/godog v0.13.0 h1:KvX9kNWmAJwp882HmObGOyBbNUP5SXQ+SDLNajsuV7A
 github.com/cucumber/godog v0.13.0/go.mod h1:FX3rzIDybWABU4kuIXLZ/qtqEe1Ac5RdXmqvACJOces=
 github.com/cucumber/messages/go/v21 v21.0.1 h1:wzA0LxwjlWQYZd32VTlAVDTkW6inOFmSM+RuOwHZiMI=
 github.com/cucumber/messages/go/v21 v21.0.1/go.mod h1:zheH/2HS9JLVFukdrsPWoPdmUtmYQAQPLk7w5vWsk5s=
-github.com/d4n13l-4lf4/gomid v1.0.0-alpha.2 h1:wgB6q067OAHoQWM5etxAJrdOyvts8x8wbdGKu7Lc8uk=
-github.com/d4n13l-4lf4/gomid v1.0.0-alpha.2/go.mod h1:Cn8ml7xwySVopJgrOuCHiFIALg5o/HnNHugb+dRYYeI=
+github.com/d4n13l-4lf4/gomid v1.0.0-alpha.3 h1:VZeXhEpxxEP4Vc4UYiyKDX2JK6ApwPCDHGCgFn8AjvA=
+github.com/d4n13l-4lf4/gomid v1.0.0-alpha.3/go.mod h1:Cn8ml7xwySVopJgrOuCHiFIALg5o/HnNHugb+dRYYeI=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/gofrs/uuid v4.3.1+incompatible h1:0/KbAdpx3UXAx1kEOWHJeOkpbgRFGHVgv+CFIY7dBJI=

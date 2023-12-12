@@ -12,7 +12,7 @@
         "editor.defaultFormatter": "golang.go",
         "editor.codeActionsOnSave": {
             "source.fixAll": "always",
-            "source.organizeImports": true
+            "source.organizeImports": "explicit"
         },
     }
 }

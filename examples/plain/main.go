@@ -21,9 +21,9 @@ func Multiplier(next middleware.Next) middleware.Next {
 }
 
 func main() {
-	fn := middleware.Wrap(Adder).
+	fn := middleware.Wrap[func(context.Context, int) (any, error)](Adder).
 		Add(Multiplier).
-		Build().(func(context.Context, int) (any, error))
+		Build()
 
 	result, err := fn(context.Background(), 1)
 	if err != nil {
